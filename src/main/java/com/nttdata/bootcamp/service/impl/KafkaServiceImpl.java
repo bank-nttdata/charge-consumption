@@ -44,11 +44,9 @@ public class KafkaServiceImpl implements KafkaService {
         // Enviar el mensaje de manera reactiva y manejar el éxito y error correctamente
         return kafkaSender.send(Mono.just(senderRecord))
                 .doOnTerminate(() -> {
-                    // Log para éxito o error
-                    System.out.println("Message sending process completed.");
+                     System.out.println("Message sending process completed.");
                 })
                 .doOnError(error -> {
-                    // Log para error
                     System.err.println("Error sending message to Kafka: " + error.getMessage());
                 })
                 .then();  // Mono<Void> para indicar que la operación ha terminado

@@ -49,18 +49,6 @@ public class ChargeConsumptionServiceImpl implements ChargeConsumptionService {
                 .next();
     }
 
-//    // Save charge consumption
-//    @Override
-//    public Mono<ChargeConsumption> saveChargeConsumption(ChargeConsumption dataChargeConsumption) {
-//        // Verificamos si el número de carga ya existe de manera reactiva
-//        return findByNumber(dataChargeConsumption.getChargeNumber())
-//                .flatMap(existingCharge -> {
-//                    // Si existe, lanzamos un error de tipo Exception
-//                    return Mono.error(new Exception("This charge number " + dataChargeConsumption.getChargeNumber() + " already exists"));
-//                })
-//                .flatMap(x -> saveTopic(dataChargeConsumption));  // Si no existe, llamamos a saveTopic para guardar
-//    }
-
     @Override
     public Mono<ChargeConsumption> saveChargeConsumption(ChargeConsumption dataChargeConsumption) {
 

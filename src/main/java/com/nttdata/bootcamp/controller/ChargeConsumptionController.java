@@ -32,32 +32,40 @@ public class ChargeConsumptionController {
     @GetMapping("/findAllLoadBalance")
     public Flux<ChargeConsumption> findAllChargeConsumption() {
         return chargeConsumptionService.findAll()
-                .doOnSubscribe(subscription -> LOGGER.info("Registered charge consumption"))
-                .doOnError(error -> LOGGER.error("Error fetching charge consumption", error));
+                .doOnSubscribe(subscription ->
+                        LOGGER.info("Registered charge consumption"))
+                .doOnError(error ->
+                        LOGGER.error("Error fetching charge consumption", error));
     }
 
     // Charge consumption by AccountNumber
     @GetMapping("/findAllChargeConsumptionByAccountNumber/{accountNumber}")
-    public Flux<ChargeConsumption> findAllChargeConsumptionByAccountNumber(@PathVariable("accountNumber") String accountNumber) {
+    public Flux<ChargeConsumption> findAllChargeConsumptionByAccountNumber(
+            @PathVariable("accountNumber") String accountNumber) {
         return chargeConsumptionService.findByAccountNumber(accountNumber)
-                .doOnSubscribe(subscription -> LOGGER.info("Registered charge consumption of account number: {}", accountNumber))
-                .doOnError(error -> LOGGER.error("Error fetching charge consumption for account {}", accountNumber, error));
+                .doOnSubscribe(subscription ->
+                        LOGGER.info("Registered charge consumption of account number: {}", accountNumber))
+                .doOnError(error ->
+                        LOGGER.error("Error fetching charge consumption for account {}", accountNumber, error));
     }
 
     // Charge consumption by Number
     @CircuitBreaker(name = "charge-consumption", fallbackMethod = "fallBackGetChargeConsumption")
     @GetMapping("/findByChargeConsumptionNumber/{numberDeposits}")
-    public Mono<ChargeConsumption> findByChargeConsumptionNumber(@PathVariable("numberDeposits") String numberDeposits) {
+    public Mono<ChargeConsumption> findByChargeConsumptionNumber(
+            @PathVariable("numberDeposits") String numberDeposits) {
         LOGGER.info("Searching charge consumption by number: {}", numberDeposits);
         return chargeConsumptionService.findByNumber(numberDeposits)
-                .doOnError(error -> LOGGER.error("Error fetching charge consumption by number {}", numberDeposits, error));
+                .doOnError(error ->
+                        LOGGER.error("Error fetching charge consumption by number {}", numberDeposits, error));
     }
 
     // Save charge consumption
     @CircuitBreaker(name = "charge-consumption", fallbackMethod = "fallBackGetChargeConsumption")
     @PostMapping(value = "/saveChargeConsumption/{creditLimit}")
-    public Mono<ChargeConsumption> saveChargeConsumption(@RequestBody @Valid ChargeConsumptionDto dataChargeConsumption,
-                                                         @PathVariable("creditLimit") Double creditLimit) {
+    public Mono<ChargeConsumption> saveChargeConsumption(
+            @RequestBody @Valid ChargeConsumptionDto dataChargeConsumption,
+            @PathVariable("creditLimit") Double creditLimit) {
         if (creditLimit >= dataChargeConsumption.getAmount()) {
             ChargeConsumption datacharge = new ChargeConsumption();
             datacharge.setDni(dataChargeConsumption.getDni());
@@ -82,31 +90,39 @@ public class ChargeConsumptionController {
     // Update charge consumption
     @CircuitBreaker(name = "charge-consumption", fallbackMethod = "fallBackGetChargeConsumption")
     @PutMapping("/updateChargeConsumption/{numberTransaction}")
-    public Mono<ChargeConsumption> updateChargeConsumption(@PathVariable("numberTransaction") String numberTransaction,
-                                                           @Valid @RequestBody ChargeConsumption dataChargeConsumption) {
+    public Mono<ChargeConsumption> updateChargeConsumption(
+            @PathVariable("numberTransaction") String numberTransaction,
+             @Valid @RequestBody ChargeConsumption dataChargeConsumption) {
         dataChargeConsumption.setChargeNumber(numberTransaction);
         dataChargeConsumption.setModificationDate(new Date());
 
         return chargeConsumptionService.updateChargeConsumption(dataChargeConsumption)
-                .doOnSuccess(charge -> LOGGER.info("Charge consumption updated successfully"))
-                .doOnError(error -> LOGGER.error("Error updating charge consumption", error));
+                .doOnSuccess(charge ->
+                        LOGGER.info("Charge consumption updated successfully"))
+                .doOnError(error ->
+                        LOGGER.error("Error updating charge consumption", error));
     }
 
     // Delete charge consumption
     @CircuitBreaker(name = "charge-consumption", fallbackMethod = "fallBackGetChargeConsumption")
     @DeleteMapping("/deleteChargeConsumption/{numberTransaction}")
-    public Mono<Void> deleteChargeConsumption(@PathVariable("numberTransaction") String numberTransaction) {
+    public Mono<Void> deleteChargeConsumption(
+            @PathVariable("numberTransaction") String numberTransaction) {
         LOGGER.info("Deleting charge consumption by number: {}", numberTransaction);
         return chargeConsumptionService.deleteChargeConsumption(numberTransaction)
-                .doOnSuccess(aVoid -> LOGGER.info("Charge consumption deleted successfully"))
-                .doOnError(error -> LOGGER.error("Error deleting charge consumption", error));
+                .doOnSuccess(aVoid ->
+                        LOGGER.info("Charge consumption deleted successfully"))
+                .doOnError(error ->
+                        LOGGER.error("Error deleting charge consumption", error));
     }
 
     @GetMapping("/getCountChargeConsumption/{accountNumber}")
-    public Mono<Long> getCountChargeConsumption(@PathVariable("accountNumber") String accountNumber) {
+    public Mono<Long> getCountChargeConsumption(
+            @PathVariable("accountNumber") String accountNumber) {
         return chargeConsumptionService.findByAccountNumber(accountNumber)
                 .count()
-                .doOnError(error -> LOGGER.error("Error counting charge consumption for account {}", accountNumber, error));
+                .doOnError(error ->
+                        LOGGER.error("Error counting charge consumption for account {}", accountNumber, error));
     }
 
     private Mono<ChargeConsumption> fallBackGetChargeConsumption(Exception e) {
